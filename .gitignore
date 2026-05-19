@@ -1,0 +1,71 @@
+# Ambiente local
+.env.local
+.env
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Arquivos de projeto
+.pyc
+.pyo
+.coverage
+.pytest_cache/
+
+# Diretórios de trabalho (não versionados)
+extracted/
+pbix/
+*.pbix
+*.pbip
+
+# Backups
+docs_backup/
+*.bak
+
+# Logs
+*.log
+logs/
+
+# Cache
+.cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

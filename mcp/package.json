@@ -1,0 +1,21 @@
+{
+  "name": "pbir-visual-editor-mcp",
+  "version": "1.0.0",
+  "description": "MCP Server para editar layouts de Power BI via Claude/Copilot",
+  "main": "pbir-visual-editor-mcp.js",
+  "scripts": {
+    "start": "node pbir-visual-editor-mcp.js",
+    "test": "echo 'Tests not yet implemented'"
+  },
+  "keywords": [
+    "powerbi",
+    "pbix",
+    "layout",
+    "mcp",
+    "claude"
+  ],
+  "author": "Data Analyst",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

@@ -1,0 +1,14 @@
+# PowerBI IA Requirements
+# Python 3.8+
+
+# Não há dependências externas obrigatórias
+# Os scripts usam bibliotecas padrão do Python:
+# - zipfile (descompactar/recompactar)
+# - json (manipular JSONs)
+# - os (operações de arquivo)
+# - argparse (argumentos CLI)
+
+# Opcional para desenvolvimento:
+# pytest==7.0.0
+# black==22.0.0
+# flake8==4.0.0
