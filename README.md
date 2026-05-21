@@ -1,328 +1,145 @@
-# PowerBI IA - Assistente para Editar Arquivos Power BI
+# PowerBI IA — Assistente para Editar Arquivos Power BI
 
-Um assistente simples para editar arquivos Power BI (PBIX) usando IA, sem abrir Power BI Desktop. Descompacta, edita JSONs de layout, e recompacta tudo automaticamente.
-
----
-
-## 🎯 O Que Você Consegue Fazer
-
-```
-Antes (sem esta solução):
-❌ Abrir Power BI Desktop
-❌ Editar visualmente cada elemento
-❌ ~30 minutos por mudança
-
-Agora (com esta solução):
-✅ "Claude, mude as cores de 5 gráficos"
-✅ IA edita JSONs de layout via MCP
-✅ ~2 minutos por mudança
-✅ Tudo versionado em Git
-```
+Edite arquivos Power BI (`.pbix`) via VSCode com auxilio de IA, sem abrir o Power BI Desktop.
+O fluxo: extrair o PBIX, editar os `visual.json` com Claude, recompactar o PBIX.
 
 ---
 
-## ⚡ Quick Start (10 minutos)
+## Pre-requisitos
 
-### 1. Instalar dependências
+- Python 3.8 ou superior
+- Node.js 16 ou superior
+- VSCode com extensao Claude Code (MCP)
+- Git
+
+---
+
+## Instalacao
+
 ```bash
 git clone https://github.com/marcelodcorrea/PowerBI_IA.git
 cd PowerBI_IA
 pip install -r requirements.txt
 cd mcp && npm install && cd ..
+cp .env.example .env.local
 ```
 
-### 2. Usar no dia a dia
-```bash
-# Descompacta PBIX
-python scripts/pbix_extractor.py pbix/relatorio.pbix
-
-# Abra VSCode + Claude (MCP conectado)
-code .
-
-# Solicite mudanças ao Claude via MCP
-# Claude edita JSONs em tempo real
-
-# Recompacta PBIX
-python scripts/pbix_recompactor.py extracted/ pbix/relatorio.pbix
-
-# Suba no Workspace
-```
+Nao ha dependencias Python externas. Os scripts usam apenas bibliotecas da biblioteca padrao.
 
 ---
 
-## 📚 Documentação Completa
+## Como usar
 
-### Para Começar (Novo Usuário)
-- **[GUIA_RAPIDO_INICIO.md](GUIA_RAPIDO_INICIO.md)** ⭐ **COMECE AQUI**
-  - 9 passos: de descompactar até publicar
-  - Exemplos práticos
-  - Troubleshooting
-
-### Para Entender MCP
-- **[CONFIGURACAO_MCP_MICROSOFT.md](CONFIGURACAO_MCP_MICROSOFT.md)** 
-  - O que é MCP e como funciona
-  - Configurar Claude Desktop (Windows/Mac/Linux)
-  - Verificar se está funcionando
-  - Exemplos de comandos para Claude
-  - Troubleshooting completo
-
-### Referência
-- **[SETUP.md](SETUP.md)** - Instalação passo a passo
-- **[FLUXO.md](FLUXO.md)** - Como usar no dia a dia
-- **[API.md](API.md)** - Funções disponíveis
-- **[EXEMPLOS.md](EXEMPLOS.md)** - Casos de uso reais (10 exemplos)
-- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Erros comuns
-- **[ARQUITETURA.md](ARQUITETURA.md)** - Como funciona (técnico)
-- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de versões
-
----
-
-## 🏗️ Arquitetura
-
-```
-Claude Desktop / VSCode + Copilot
-    ↓ (via MCP - Model Context Protocol)
-Node.js MCP Server
-    ↓ (lê/escreve)
-extracted/ (JSONs do PBIX)
-    ├── report/
-    │   ├── definition/pages/
-    │   │   ├── [página1]/visual.json
-    │   │   ├── [página2]/visual.json
-    │   │   └── ...
-    │   └── ...
-    └── semanticModel/
-```
-
----
-
-## 🚀 Fluxo Completo
-
-```
-1. Clone o repositório
-   ↓
-2. Instale dependências (Python + Node.js)
-   ↓
-3. Coloque seu PBIX em: pbix/seu_relatorio.pbix
-   ↓
-4. Descompacte: python scripts/pbix_extractor.py pbix/seu_relatorio.pbix
-   ↓
-5. Configure Claude Desktop (MCP)
-   ↓
-6. Abra VSCode: code .
-   ↓
-7. Solicite mudanças ao Claude (via MCP)
-   ↓
-8. Claude edita os JSONs automaticamente
-   ↓
-9. Recompacte: python scripts/pbix_recompactor.py extracted/ novo.pbix
-   ↓
-10. Publique no Power BI Workspace
-```
-
----
-
-## 🔧 Tecnologia
-
-- **Python 3.8+** - Scripts para descompactar/recompactar PBIX
-- **Node.js 16+** - MCP Server para acesso aos arquivos
-- **Claude ou GitHub Copilot** - IA para editar via MCP
-- **VSCode** - Editor para revisar mudanças
-- **Git** - Versionamento de mudanças
-
----
-
-## 📋 Pré-requisitos
-
-- Python 3.8+
-- Node.js 16+
-- VSCode
-- Claude Desktop instalado
-- Git (opcional, mas recomendado)
-
----
-
-## ✨ Funcionalidades
-
-✅ Descompactar PBIX em JSONs editáveis  
-✅ Editar cores, fontes, tamanhos, posições de visuais  
-✅ Renomear títulos e labels  
-✅ Reorganizar layout de páginas  
-✅ Validar integridade de arquivo  
-✅ Recompactar em novo PBIX  
-✅ Versionamento com Git  
-✅ MCP oficial da Microsoft integrado  
-
----
-
-## ❌ O Que NÃO Funciona
-
-- ❌ Alterar dados (use Power Query)
-- ❌ Criar novas medidas DAX (use tabelas semânticas)
-- ❌ Mudar relacionamentos entre tabelas
-- ❌ Modificar modelo de dados completo
-
-Para essas tarefas, continue usando Power BI Desktop ou Power Query.
-
----
-
-## 🎯 Caso de Uso Ideal
-
-```
-Você:
-  "Claude, nos 10 gráficos deste relatório:
-   - Mude todas as cores para azul corporativo (#0078D4)
-   - Aumente tamanho da fonte para 16px
-   - Deixe os textos em negrito"
-
-Claude (via MCP):
-  "✓ Conectei ao seu projeto
-   ✓ Encontrei 10 gráficos
-   ✓ Mudei cores
-   ✓ Aumentei fontes
-   ✓ Adicionei negrito
-   ✓ Pronto!"
-
-Resultado:
-  Novo PBIX com 10 gráficos atualizados em 2 minutos
-  (vs 30 minutos manual)
-```
-
----
-
-## 📁 Estrutura
+### 1. Coloque o arquivo .pbix na pasta `pbix/`
 
 ```
 PowerBI_IA/
-├── pbix/                      ← Coloque seus PBIX aqui
-├── extracted/                 ← JSONs descompactados (auto)
+└── pbix/
+    └── MeuRelatorio.pbix   <- cole aqui
+```
+
+### 2. Extraia o PBIX
+
+```bash
+python scripts/pbix_extractor.py pbix/MeuRelatorio.pbix
+```
+
+Os arquivos JSON serao extraidos para `extracted/`.
+
+### 3. Edite com Claude no VSCode
+
+Abra o VSCode na pasta do projeto. Solicite mudancas ao Claude:
+
+```
+"Mude a cor dos cards KPI para #FF6600"
+"Mova o grafico de barras 50 pixels para baixo"
+"Altere o titulo da pagina para 'Resumo Executivo'"
+```
+
+Claude usa as ferramentas MCP para ler e editar os `visual.json` em `extracted/`.
+
+### 4. Recompacte o PBIX
+
+```bash
+python scripts/pbix_recompactor.py extracted/ pbix/MeuRelatorio_editado.pbix --original pbix/MeuRelatorio.pbix
+```
+
+O arquivo gerado pode ser aberto diretamente no Power BI Desktop.
+
+---
+
+## Scripts disponiveis
+
+| Script | Descricao | Uso |
+|--------|-----------|-----|
+| `pbix_extractor.py` | Descompacta PBIX em arquivos JSON | `python scripts/pbix_extractor.py pbix/arquivo.pbix` |
+| `pbix_recompactor.py` | Recompacta JSONs editados em PBIX valido | `python scripts/pbix_recompactor.py extracted/ saida.pbix --original original.pbix` |
+| `pbix_info.py` | Inspeciona PBIX sem extrair (paginas, visuais, status) | `python scripts/pbix_info.py pbix/arquivo.pbix` |
+| `pbix_validator.py` | Valida integridade basica de um PBIX | `python scripts/pbix_validator.py pbix/arquivo.pbix` |
+
+---
+
+## Estrutura de pastas
+
+```
+PowerBI_IA/
+├── pbix/                          # Cole os .pbix aqui (ignorados pelo Git)
+│   └── .gitkeep
+├── extracted/                     # Arquivos extraidos (ignorados pelo Git)
+│   └── .gitkeep
 ├── scripts/
-│   ├── pbix_extractor.py      ← Descompacta
-│   ├── pbix_recompactor.py    ← Recompacta
-│   └── pbix_validator.py      ← Valida
+│   ├── pbix_extractor.py
+│   ├── pbix_recompactor.py
+│   ├── pbix_info.py
+│   └── pbix_validator.py
 ├── mcp/
-│   ├── pbir-visual-editor-mcp.js  ← MCP Server
+│   ├── pbir-visual-editor-mcp.js
 │   └── package.json
-├── GUIA_RAPIDO_INICIO.md      ← ⭐ COMECE AQUI
-├── CONFIGURACAO_MCP_MICROSOFT.md
-├── SETUP.md
-├── FLUXO.md
-├── API.md
-├── EXEMPLOS.md
-├── TROUBLESHOOTING.md
-├── ARQUITETURA.md
-├── CHANGELOG.md
 ├── requirements.txt
 ├── .env.example
-└── .gitignore
+└── README.md
 ```
 
 ---
 
-## 🚀 Próximos Passos
+## Nota sobre SecurityBindings
 
-1. **Novo usuário?**
-   - Leia: [GUIA_RAPIDO_INICIO.md](GUIA_RAPIDO_INICIO.md)
-   - Tempo: ~10 minutos
-   - Você estará pronto para usar
+O arquivo `SecurityBindings` dentro do PBIX contem uma assinatura criptografica DPAPI
+(Data Protection API do Windows) gerada pelo Power BI Desktop no momento do salvamento.
+Essa assinatura e um hash do conteudo dos arquivos do relatorio.
 
-2. **Quer entender MCP?**
-   - Leia: [CONFIGURACAO_MCP_MICROSOFT.md](CONFIGURACAO_MCP_MICROSOFT.md)
-   - Tempo: ~15 minutos
-   - Você entenderá como tudo funciona
+Ao modificar qualquer `visual.json` externamente, o hash original deixa de ser valido.
+Se o `SecurityBindings` nao for zerado, o Power BI Desktop exibe:
 
-3. **Tem um erro?**
-   - Veja: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-   - Ou seção "Troubleshooting" em [GUIA_RAPIDO_INICIO.md](GUIA_RAPIDO_INICIO.md)
+> "Nao foi possivel abrir o documento — Esse arquivo esta corrompido ou foi criado por
+> uma versao nao reconhecida de Power BI Desktop."
 
-4. **Quer exemplos práticos?**
-   - Veja: [EXEMPLOS.md](EXEMPLOS.md)
-   - 10 casos reais prontos para adaptar
+O script `pbix_recompactor.py` zera automaticamente o `SecurityBindings` (`b''`).
+O Power BI Desktop abre o arquivo normalmente sem essa assinatura — ela e opcional
+para leitura, obrigatoria apenas para validacao DRM.
 
 ---
 
-## 💡 Exemplo Real
+## Troubleshooting
 
-**Seu comando:**
-```
-Claude, neste relatório de vendas, faça:
-1. Mude o título "Sales 2024" para "Revenue 2024"
-2. Gráfico "Monthly": cor azul de 200 para 300 (mais escuro)
-3. Card KPI: aumente fontSize de 14 para 20px
-```
-
-**Claude executa via MCP:**
-- Acessa os arquivos
-- Encontra os elementos
-- Edita as propriedades
-- Salva tudo
-
-**Seu resultado:**
-```
-✓ Pronto em ~30 segundos
-✓ Recompacte: python scripts/pbix_recompactor.py extracted/ novo.pbix
-✓ Novo PBIX com todas as mudanças
-```
+| Erro | Causa | Solucao |
+|------|-------|---------|
+| `UnicodeEncodeError: 'charmap' codec can't encode character` | Windows com terminal em encoding nao-UTF8, versao antiga dos scripts com emojis | Atualize para a versao atual dos scripts (sem emojis). Alternativa: `set PYTHONUTF8=1` antes de executar |
+| `"Arquivo corrompido"` no Power BI Desktop | `SecurityBindings` nao foi zerado | Use sempre `--original` no `pbix_recompactor.py`; o script zera automaticamente |
+| `DataModel` parece corrompido | Compressao errada ao recompactar | O script ja corrige: `DataModel` e salvo como `ZIP_STORED` (sem compressao) |
+| `[ERRO] Arquivo nao encontrado` | Caminho errado ou arquivo nao copiado para `pbix/` | Verifique se o `.pbix` esta em `pbix/` e o caminho esta correto |
+| `[ERRO] nao e um arquivo PBIX valido` | Arquivo corrompido ou nao e um PBIX | Verifique se o arquivo abre normalmente no Power BI Desktop |
+| Modificacoes nao aparecem no PBIX gerado | Arquivos editados em diretorio diferente do informado | Confirme que `extracted_dir` aponta para o mesmo diretorio onde os JSONs foram editados |
 
 ---
 
-## 🔒 Segurança
+## Como funciona (resumo tecnico)
 
-- ✅ Nenhum token ou credencial exposto
-- ✅ .gitignore bloqueia arquivos sensíveis
-- ✅ .env.example para template (sem valores reais)
-- ✅ Pronto para produção
-
----
-
-## 📊 Benefícios
-
-| Aspecto | Sem Solução | Com PowerBI IA |
-|---------|-----------|-----------------|
-| Tempo | 30 min/mudança | 2 min/mudança |
-| Desktop | Precisa abrir | Não precisa |
-| Versionamento | Manual | Git automático |
-| Batch de mudanças | Demorado | Rápido |
-| Precisão | Manual | 100% (MCP) |
-
----
-
-## 🤝 Contribuindo
-
-Found a bug? Tem uma sugestão?
-1. Abra uma issue no GitHub
-2. Fork o repositório
-3. Faça suas mudanças
-4. Envie um Pull Request
-
----
-
-## 📝 Licença
-
-MIT - Use como quiser
-
----
-
-## 📧 Suporte
-
-- **Documentação:** Veja os .md files neste repo
-- **GitHub Issues:** Abra uma issue se tiver problemas
-- **Referências:** Veja seção "Referências" em [CONFIGURACAO_MCP_MICROSOFT.md](CONFIGURACAO_MCP_MICROSOFT.md)
-
----
-
-## 🎯 Roadmap Futuro
-
-- [ ] Suporte a múltiplos PBIX simultâneos
-- [ ] Preview HTML em tempo real
-- [ ] Git integration automática
-- [ ] Undo/Redo
-- [ ] Suporte a Power Query básico
-- [ ] Dashboard web para gerenciamento
-
----
-
-**Made by Claude IA | Focado em Simplicidade e Qualidade**
-
-**Pronto para começar? → [GUIA_RAPIDO_INICIO.md](GUIA_RAPIDO_INICIO.md)** ⭐
-
+1. Um arquivo `.pbix` e um ZIP renomeado com estrutura proprietaria do Power BI
+2. Os visuais de cada pagina ficam em `Report/definition/pages/<guid>/visuals/<guid>/visual.json`
+3. Python extrai o ZIP, preservando todos os metadados dos entries
+4. Claude edita os `visual.json` via MCP (Model Context Protocol)
+5. Python recompacta usando os `ZipInfo` originais (`writestr(item, data)`) para preservar
+   `create_version`, `flag_bits` e demais campos que o Power BI valida
+6. `SecurityBindings` e zerado para invalidar a assinatura DPAPI que nao refletiria mais o conteudo
+7. `DataModel` e adicionado por ultimo com `ZIP_STORED` (comportamento do Power BI Desktop)

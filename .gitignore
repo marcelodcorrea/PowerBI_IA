@@ -38,7 +38,6 @@ wheels/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Arquivos de projeto
 .pyc
@@ -46,11 +45,13 @@ wheels/
 .coverage
 .pytest_cache/
 
-# Diretórios de trabalho (não versionados)
-extracted/
-pbix/
-*.pbix
-*.pbip
+# Arquivos PBIX (dados do cliente - nunca no Git)
+pbix/*.pbix
+pbix/*.pbix.backup
+
+# Arquivos extraidos (gerados localmente)
+extracted/*
+!extracted/.gitkeep
 
 # Backups
 docs_backup/
@@ -69,3 +70,4 @@ dmypy.json
 # Sistema operacional
 .DS_Store
 Thumbs.db
+Thumbs.db:encryptable

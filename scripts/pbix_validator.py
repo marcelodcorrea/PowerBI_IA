@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 """
 Valida integridade de arquivo PBIX.
@@ -7,89 +8,80 @@ Uso:
 """
 
 import sys
+import io
 import zipfile
 import os
 import json
 import argparse
 
+try:
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+except AttributeError:
+    pass
+
 
 def validate_pbix(pbix_file):
-    """
-    Valida integridade de arquivo PBIX.
-    
-    Args:
-        pbix_file: Caminho do arquivo PBIX
-        
-    Returns:
-        bool: True se válido, False se inválido
-    """
     try:
-        print(f"⏳ Validando {pbix_file}...")
-        
-        # Validar arquivo
+        print(f"[INFO] Validando {pbix_file}...")
+
         if not os.path.exists(pbix_file):
-            print(f"❌ Erro: Arquivo '{pbix_file}' não encontrado")
+            print(f"[ERRO] Arquivo '{pbix_file}' nao encontrado")
             return False
-        
+
         if not pbix_file.endswith('.pbix'):
-            print(f"❌ Erro: Arquivo deve ser .pbix")
+            print(f"[ERRO] Arquivo deve ter extensao .pbix")
             return False
-        
-        # Validar ZIP
+
         if not zipfile.is_zipfile(pbix_file):
-            print(f"❌ Erro: Arquivo não é PBIX válido (não é ZIP)")
+            print(f"[ERRO] Arquivo nao e PBIX valido (ZIP invalido)")
             return False
-        
-        # Validar estrutura interna
+
         with zipfile.ZipFile(pbix_file, 'r') as zip_ref:
-            # Verificar se tem arquivos de relatório
             files = zip_ref.namelist()
-            
-            # Verificar estrutura básica
-            has_report = any('report' in f for f in files)
-            has_model = any('semanticModel' in f for f in files)
-            
+
+            has_report = any('Report' in f or 'report' in f for f in files)
+            has_model = 'DataModel' in files
+
             if not has_report:
-                print(f"⚠️  Aviso: Estrutura de 'report' não encontrada")
-            
+                print(f"[AVISO] Estrutura de 'Report' nao encontrada")
+
             if not has_model:
-                print(f"⚠️  Aviso: Estrutura de 'semanticModel' não encontrada")
-            
-            # Contar páginas
-            pages = [f for f in files if 'pages' in f and 'visual.json' in f]
-            
-            print(f"✓ PBIX válido")
-            print(f"✓ Estrutura OK")
-            print(f"✓ Arquivos: {len(files)}")
-            if pages:
-                print(f"✓ Páginas: {len(set(p.split('/')[:-1] for p in pages))}")
-            
-            print(f"\n✅ Arquivo validado com sucesso")
+                print(f"[AVISO] DataModel nao encontrado")
+
+            visuals = [f for f in files if f.endswith('visual.json')]
+            pages = set()
+            for v in visuals:
+                parts = v.split('/')
+                if 'pages' in parts:
+                    idx = parts.index('pages')
+                    if idx + 1 < len(parts):
+                        pages.add(parts[idx + 1])
+
+            print(f"[OK]  PBIX valido")
+            print(f"[OK]  Entradas ZIP: {len(files)}")
+            print(f"[OK]  Paginas: {len(pages)}")
+            print(f"[OK]  Visuais: {len(visuals)}")
+            print(f"[OK]  Arquivo validado com sucesso")
             return True
-        
+
     except zipfile.BadZipFile:
-        print(f"❌ Erro: {pbix_file} não é um arquivo PBIX válido")
+        print(f"[ERRO] '{pbix_file}' nao e um arquivo PBIX valido")
         return False
     except json.JSONDecodeError as e:
-        print(f"❌ Erro: JSON inválido - {e}")
+        print(f"[ERRO] JSON invalido: {e}")
         return False
     except Exception as e:
-        print(f"❌ Erro: {e}")
+        print(f"[ERRO] {e}")
         return False
 
 
 def main():
-    """Função principal."""
     parser = argparse.ArgumentParser(
         description="Valida integridade de arquivo PBIX"
     )
-    parser.add_argument(
-        "pbix_file",
-        help="Arquivo PBIX a validar"
-    )
-    
+    parser.add_argument("pbix_file", help="Arquivo PBIX a validar")
+
     args = parser.parse_args()
-    
     success = validate_pbix(args.pbix_file)
     sys.exit(0 if success else 1)
 
