@@ -279,6 +279,73 @@ python scripts/pbix_recompactor.py extracted/ novo.pbix
 
 ---
 
+## Referência: Visual de Tabela (`tableEx`)
+
+O `tableEx` tem exigências específicas que diferem dos outros visuais. Omitir qualquer campo obrigatório resulta em tabela em branco sem mensagem de erro.
+
+### Campos obrigatórios
+
+| Campo | Onde | Descrição |
+|---|---|---|
+| `nativeQueryRef` | Cada projeção | Nome legível da coluna/medida. **Sem ele a query não resolve.** |
+| `drillFilterOtherVisuals` | `visual` | Deve ser `true` |
+| `filterConfig.filters` | Raiz do visual | Uma entrada por campo: `Categorical` para colunas, `Advanced` para medidas |
+
+### Bucket correto
+
+| Visual | Dimensões | Medidas |
+|---|---|---|
+| `tableEx` (tabela simples) | `Values` | `Values` |
+| `pivotTable` (matriz) | `Rows` / `Columns` | `Values` |
+
+**Nunca colocar dimensões em `Rows` num `tableEx`** — são silenciosamente ignoradas.
+
+### Restrição de tabelas de dimensão
+
+Combinar colunas de tabelas diferentes sem a chave de junção causa cross-join vazio:
+
+```
+❌ vendas.Vendedor + regioes.Região + produtos.Categoria  → tabela em branco
+✅ vendas.Vendedor + vendas.Produto                       → funciona
+```
+
+### Estrutura mínima funcional
+
+```json
+{
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": { "Column": { "Expression": { "SourceRef": { "Entity": "tabela" } }, "Property": "Coluna" } },
+              "queryRef": "tabela.Coluna",
+              "nativeQueryRef": "Coluna"
+            },
+            {
+              "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Medida" } },
+              "queryRef": "_Medidas.Medida",
+              "nativeQueryRef": "Medida"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      { "name": "<hex-20-chars>", "field": { "Column": { "Expression": { "SourceRef": { "Entity": "tabela" } }, "Property": "Coluna" } }, "type": "Categorical" },
+      { "name": "<hex-20-chars>", "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "_Medidas" } }, "Property": "Medida" } }, "type": "Advanced" }
+    ]
+  }
+}
+```
+
+---
+
 ## Debugging
 
 ### Ver arquivo JSON editado

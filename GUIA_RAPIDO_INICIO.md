@@ -1,49 +1,61 @@
-# Guia Rápido de Início - PowerBI IA
+# Guia de Instalação e Uso — PowerBI IA
 
-Instruções passo a passo para começar a usar o assistente agora.
+Tudo que você precisa para instalar e começar a usar o assistente.
 
 ---
 
-## 🎯 Visão Geral do Fluxo
+## Visão Geral do Fluxo
 
 ```
-1. Baixar PBIX do Workspace
+1. Instalar dependências
    ↓
-2. Descompactar com Python
+2. Configurar MCP no Claude Desktop
    ↓
-3. Abrir VSCode + MCP conectado
+3. Baixar PBIX do Workspace
    ↓
-4. Pedir mudanças ao Claude/Copilot
+4. Descompactar com Python
    ↓
-5. Recompactar PBIX
+5. Pedir mudanças ao Claude
    ↓
-6. Publicar no Workspace
+6. Recompactar PBIX
+   ↓
+7. Publicar no Workspace
 ```
 
 ---
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
-- ✅ Python 3.8+ instalado
-- ✅ Node.js 16+ instalado
-- ✅ VSCode instalado
-- ✅ Claude Desktop instalado (ou GitHub Copilot no VSCode)
-- ✅ Projeto clonado: `git clone https://github.com/marcelodcorrea/PowerBI_IA.git`
+Instale antes de começar:
+
+| Ferramenta | Versão mínima | Download |
+|---|---|---|
+| Python | 3.8+ | https://python.org |
+| Node.js | 16+ | https://nodejs.org |
+| VSCode | qualquer | https://code.visualstudio.com |
+| Claude Desktop | qualquer | https://claude.ai/download |
+| Git | qualquer | https://git-scm.com |
 
 ---
 
-## 🚀 PASSO 1: Preparar Ambiente
+## PARTE 1 — Instalação (primeira vez)
 
-### 1.1 Instalar Dependências Python
+### Passo 1: Clonar o repositório
 
 ```bash
+git clone https://github.com/marcelodcorrea/PowerBI_IA.git
 cd PowerBI_IA
+```
+
+### Passo 2: Instalar dependências Python
+
+```bash
 pip install -r requirements.txt
 ```
 
-**O que instala:** Nenhuma dependência externa (Python puro!)
+> Os scripts usam apenas bibliotecas padrão do Python (`zipfile`, `json`, `os`) — nenhuma dependência externa obrigatória.
 
-### 1.2 Instalar MCP Server Node.js
+### Passo 3: Instalar dependências Node.js do MCP
 
 ```bash
 cd mcp
@@ -51,343 +63,269 @@ npm install
 cd ..
 ```
 
-**O que instala:** Dependências do MCP Server
-
-### 1.3 Criar Pastas de Trabalho
+### Passo 4: Criar pastas de trabalho
 
 ```bash
-mkdir -p pbix extracted
+mkdir pbix
+mkdir extracted
 ```
 
-- `pbix/` → Coloque seu arquivo PBIX aqui
-- `extracted/` → JSONs descompactados (criado automaticamente)
+- `pbix/` → coloque seus arquivos PBIX aqui
+- `extracted/` → JSONs extraídos (criado automaticamente pelo extrator)
 
----
+### Passo 5: Configurar MCP no Claude Desktop
 
-## 📥 PASSO 2: Conseguir um Arquivo PBIX
+**Windows:** abra `%APPDATA%\Claude\claude_desktop_config.json`
+**Mac/Linux:** abra `~/.claude/claude_desktop_config.json`
 
-### Opção A: Do Power BI Service
-
-1. Abra https://app.powerbi.com
-2. Vá para seu workspace
-3. Clique no relatório → ⋯ (três pontos) → Baixar
-4. Salve em: `pbix/seu_relatorio.pbix`
-
-### Opção B: Do Power BI Desktop
-
-1. Abra seu relatório no Power BI Desktop
-2. Arquivo → Salvar como → Escolha pasta `pbix/`
-3. Nomeie como: `seu_relatorio.pbix`
-
-### Opção C: Usar Arquivo de Teste
-
-```bash
-# Criar arquivo PBIX de teste (estrutura mínima)
-python scripts/pbix_extractor.py pbix/relatorio.pbix 2>/dev/null || \
-cp pbix/relatorio.pbix pbix/teste.pbix
-```
-
----
-
-## 🔧 PASSO 3: Descompactar o PBIX
-
-```bash
-python scripts/pbix_extractor.py pbix/seu_relatorio.pbix
-```
-
-**Resultado esperado:**
-
-```
-✓ PBIX descompactado
-✓ Arquivos extraídos para: ./extracted
-✓ Estrutura:
-  ├── report/
-  │   ├── definition/
-  │   │   └── pages/
-  │   │       └── (JSONs dos visuais)
-  │   └── ...
-  ├── semanticModel/
-  └── ...
-
-✅ Sucesso! Pronto para editar com VSCode.
-```
-
----
-
-## 🎨 PASSO 4: Conectar MCP no Claude Desktop
-
-### 4.1 Localizar arquivo de configuração
-
-**Windows:**
-```
-%APPDATA%\Claude\claude_desktop_config.json
-```
-
-**Mac/Linux:**
-```
-~/.claude/claude_desktop_config.json
-```
-
-### 4.2 Editar Configuração
-
-Abra o arquivo e adicione o MCP Server:
+Adicione o bloco abaixo, ajustando o caminho para o seu computador:
 
 ```json
 {
   "mcpServers": {
     "pbir-visual-editor": {
       "command": "node",
-      "args": ["C:\\Users\\SeuUsuario\\PowerBI_IA\\mcp\\pbir-visual-editor-mcp.js"]
+      "args": ["C:\\caminho\\para\\PowerBI_IA\\mcp\\pbir-visual-editor-mcp.js"]
     }
   }
 }
 ```
 
-**Ajuste o caminho para seu computador!**
+Salve o arquivo e **reinicie o Claude Desktop**. Você verá a notificação "MCP Server connected".
 
-### 4.3 Reiniciar Claude Desktop
+> **GitHub Copilot:** siga a documentação do Copilot para conectar MCP Servers externos.
 
-1. Feche Claude Desktop completamente
-2. Abra novamente
-3. Você verá notificação: "MCP Server connected"
-
----
-
-## 🗂️ PASSO 5: Abrir no VSCode
+### Passo 6: Verificar instalação
 
 ```bash
-code .
-```
+python --version   # deve retornar 3.8+
+node --version     # deve retornar 16+
+npm --version      # deve estar instalado
 
-### O que você verá:
-
-```
-PowerBI_IA/
-├── extracted/               ← Seus JSONs aqui
-│   ├── report/
-│   │   └── definition/
-│   │       └── pages/
-│   │           ├── [página1]/
-│   │           │   ├── visual.json    ← Edite visuais aqui
-│   │           │   └── ...
-│   │           └── [página2]/
-│   └── semanticModel/      ← Modelo de dados
-├── pbix/                    ← Seu PBIX original
-├── scripts/                 ← Scripts Python
-├── mcp/                     ← MCP Server
-└── (outros arquivos)
-```
-
----
-
-## 💬 PASSO 6: Pedir Mudanças ao Claude
-
-### No Claude Desktop, escreva:
-
-```
-Claude, no relatório que preparei:
-
-1. Mude o título do gráfico 'Sales' para 'Revenue'
-2. Altere a cor de fundo do card KPI para azul (#0078D4)
-3. Aumente o tamanho da fonte dos títulos para 18px
-
-Você pode acessar os arquivos via MCP. Faça as mudanças.
-```
-
-### O que Claude faz:
-
-1. Conecta via MCP ao seu projeto
-2. Lê os JSONs de layout
-3. Encontra os elementos
-4. Edita as propriedades
-5. Salva os arquivos atualizados
-6. Avisa quando termina
-
----
-
-## ✅ PASSO 7: Verificar Mudanças
-
-### No VSCode:
-
-1. Abra `extracted/report/definition/pages/[página]/visual.json`
-2. Procure pelas mudanças feitas
-3. Os JSONs estarão alterados
-4. Você pode ver um preview com HTML (veja abaixo)
-
-### Validar Mudanças:
-
-```bash
-python scripts/pbix_validator.py pbix/seu_relatorio.pbix
-```
-
----
-
-## 🔨 PASSO 8: Recompactar PBIX
-
-Após aprovar as mudanças:
-
-```bash
-python scripts/pbix_recompactor.py extracted/ pbix/seu_relatorio_novo.pbix
-```
-
-**Resultado esperado:**
-
-```
-⏳ Recompactando PBIX...
-✓ PBIX recompactado
-✓ Arquivo: pbix/seu_relatorio_novo.pbix
-✓ Tamanho: 512.3 KB
-
-✅ Sucesso! Pronto para publicar.
-```
-
----
-
-## 📤 PASSO 9: Publicar no Workspace
-
-### Opção A: Via Power BI Desktop
-
-1. Power BI Desktop → Abrir
-2. Abra `pbix/seu_relatorio_novo.pbix`
-3. Power BI Desktop carrega as mudanças
-4. Arquivo → Publicar
-5. Escolha seu workspace
-6. Pronto!
-
-### Opção B: Via Power BI Service
-
-1. Power BI Service → Seu Workspace
-2. Upload → Trocar arquivo existente
-3. Selecione `pbix/seu_relatorio_novo.pbix`
-4. Pronto!
-
----
-
-## 🔄 CICLO COMPLETO (Exemplo)
-
-```bash
-# 1. Descompactar
-python scripts/pbix_extractor.py pbix/vendas.pbix
-
-# 2. VSCode
-code .
-
-# 3. Claude edita via MCP (vire para Claude Desktop)
-# Claude: "Mude as cores para azul corporativo"
-
-# 4. Você aprova as mudanças (revise em VSCode)
-
-# 5. Recompactar
-python scripts/pbix_recompactor.py extracted/ pbix/vendas_novo.pbix
-
-# 6. Publicar (abra no Power BI Desktop ou Service)
-# Resultado: Relatório com cores atualizadas!
-```
-
----
-
-## 📊 Exemplo Prático: Mudar Cores
-
-### Seu comando para Claude:
-
-```
-Claude, neste relatório de vendas:
-
-1. Gráfico 'Monthly Sales': 
-   - Mude cor de azul (#ADD8E6) para azul corporativo (#0078D4)
-   
-2. Card KPI 'Total Revenue':
-   - Mude cor de fundo para verde claro (#E8F5E9)
-   - Aumentar tamanho fonte para 20px
-
-Use o MCP para acessar os JSONs e fazer as mudanças.
-```
-
-### O que Claude retorna:
-
-```
-✓ Conectei ao MCP
-✓ Encontrei o gráfico 'Monthly Sales' na página 1
-✓ Alterei a cor para #0078D4
-✓ Encontrei o card 'Total Revenue' na página 1
-✓ Mudei cor de fundo para #E8F5E9
-✓ Aumentei fontSize para 20px
-
-✅ 3 elementos atualizados com sucesso!
-Os arquivos foram salvos.
-```
-
-### Então você:
-
-```bash
-# Recompacta
-python scripts/pbix_recompactor.py extracted/ pbix/vendas_novo.pbix
-
-# Publica
-# (Abre no Power BI Desktop e publica)
-
-# Resultado: Cores atualizadas no workspace!
-```
-
----
-
-## 🆘 Troubleshooting
-
-### Erro: "MCP Server não conecta"
-
-```bash
-# 1. Verifique o caminho em claude_desktop_config.json
-# 2. Reinicie Claude Desktop
-# 3. No VSCode, abra terminal e teste:
+# Teste o MCP Server
 cd mcp
 node pbir-visual-editor-mcp.js
+# Pressione Ctrl+C para sair
+cd ..
+
+# Teste o script Python
+python scripts/pbix_validator.py --help
 ```
 
-### Erro: "PBIX não descompacta"
+Se todos os comandos retornarem sem erro, a instalação está completa.
+
+---
+
+## PARTE 2 — Uso no dia a dia
+
+### Passo 7: Obter um arquivo PBIX
+
+**Opção A — Do Power BI Service:**
+1. Abra https://app.powerbi.com
+2. Vá para seu workspace → clique no relatório → ⋯ → Baixar
+3. Salve em `pbix/seu_relatorio.pbix`
+
+**Opção B — Do Power BI Desktop:**
+1. Arquivo → Salvar como → pasta `pbix/`
+
+> **Regra do projeto:** sempre use o arquivo `.pbix` com a data de modificação mais recente da pasta `pbix/` como base para qualquer operação.
+
+### Passo 8: Descompactar o PBIX
 
 ```bash
-# 1. Verifique se é arquivo .pbix válido
-# 2. Tente validar:
-python scripts/pbix_validator.py pbix/seu_relatorio.pbix
-
-# 3. Se falhar, baixe de novo do Power BI Service
-```
-
-### Erro: "JSONs não são encontrados"
-
-```bash
-# 1. Confirme que descompactou:
-ls -la extracted/report/definition/pages/
-
-# 2. Se não tiver nada, execute novamente:
 python scripts/pbix_extractor.py pbix/seu_relatorio.pbix
 ```
 
+Resultado esperado:
+```
+[OK] Arquivos extraídos: XX
+[OK] Páginas encontradas: X
+[OK] Visuais encontrados: XX
+[OK] Extração concluída.
+```
+
+### Passo 9: Abrir no VSCode
+
+```bash
+code .
+```
+
+Estrutura gerada em `extracted/`:
+```
+extracted/
+└── Report/
+    └── definition/
+        └── pages/
+            └── [id-da-pagina]/
+                ├── page.json
+                └── visuals/
+                    └── [id-do-visual]/
+                        └── visual.json   ← edite aqui
+```
+
+### Passo 10: Pedir mudanças ao Claude
+
+No Claude Desktop (com MCP conectado), descreva o que quer mudar:
+
+```
+Claude, no relatório que preparei:
+1. Mude a cor de fundo dos cards para azul (#0078D4)
+2. Altere o título do gráfico de barras para "Vendas por Região"
+3. Aumente a fonte dos títulos para 18pt
+
+Use o MCP para acessar os arquivos e fazer as mudanças.
+```
+
+### Passo 11: Recompactar o PBIX
+
+Após aprovar as mudanças nos JSONs:
+
+```bash
+python scripts/pbix_recompactor.py ./extracted pbix/seu_relatorio_novo.pbix --original pbix/seu_relatorio.pbix
+```
+
+Resultado esperado:
+```
+[OK] PBIX gerado: pbix/seu_relatorio_novo.pbix (XX KB)
+[OK] Concluído. Arquivo pode ser aberto no Power BI Desktop.
+```
+
+### Passo 12: Publicar no Workspace
+
+**Opção A — Via Power BI Desktop:**
+1. Abra `pbix/seu_relatorio_novo.pbix` no Power BI Desktop
+2. Arquivo → Publicar → escolha seu workspace
+
+**Opção B — Via Power BI Service:**
+1. Seu workspace → Upload → Trocar arquivo existente
+2. Selecione `pbix/seu_relatorio_novo.pbix`
+
 ---
 
-## 📚 Próximos Passos
+## Exemplo Completo
 
-- **Mais exemplos?** Veja [EXEMPLOS.md](EXEMPLOS.md)
-- **Entender internals?** Veja [ARQUITETURA.md](ARQUITETURA.md)
-- **Erros?** Veja [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **Referência de funções?** Veja [API.md](API.md)
+```bash
+# 1. Identificar o PBIX mais recente
+# Windows:
+Get-ChildItem pbix/*.pbix | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+# 2. Descompactar
+python scripts/pbix_extractor.py pbix/vendas.pbix
+
+# 3. Abrir VSCode
+code .
+
+# 4. Pedir mudanças ao Claude Desktop via MCP
+# Ex: "Mude todas as cores para o azul corporativo #0078D4"
+
+# 5. Recompactar
+python scripts/pbix_recompactor.py ./extracted pbix/vendas_v2.pbix --original pbix/vendas.pbix
+
+# 6. Publicar no Power BI Desktop ou Service
+```
 
 ---
 
-## ✅ Checklist para Começar
+## Dicas de Uso
 
-- [ ] Python 3.8+ instalado
-- [ ] Node.js 16+ instalado
+### Tempo por operação
+
+| Operação | Tempo estimado |
+|---|---|
+| Descompactar PBIX | ~5 segundos |
+| Solicitar mudança ao Claude | ~1 minuto |
+| Claude editar via MCP | ~30 segundos |
+| Recompactar PBIX | ~5 segundos |
+| **Total por mudança** | **~2–3 minutos** (vs ~30 min no Power BI Desktop) |
+
+### Iteração rápida: várias mudanças, um só recompact
+
+Não é necessário recompactar após cada mudança. Extraia uma vez, peça quantas mudanças quiser ao Claude, recompacte apenas ao final:
+
+```bash
+python scripts/pbix_extractor.py pbix/relatorio.pbix
+code .
+
+# Mudança 1 → Claude edita via MCP → aprove
+# Mudança 2 → Claude edita via MCP → aprove
+# Mudança 3 → Claude edita via MCP → aprove
+
+python scripts/pbix_recompactor.py ./extracted pbix/relatorio_v2.pbix --original pbix/relatorio.pbix
+# Todas as mudanças consolidadas em um único PBIX
+```
+
+## Quando Usar Este Projeto
+
+### Funciona bem para
+- Mudar cores de gráficos, cards e fundos de página
+- Ajustar tamanhos e posições de visuais
+- Renomear títulos e labels
+- Alterar fontes (tamanho, peso, família)
+- Reorganizar layout de páginas
+
+### Não substitui o Power BI Desktop para
+- Alterar dados (requer Power Query)
+- Criar ou editar medidas DAX
+- Mudar relacionamentos entre tabelas
+- Criar novos tipos de visual do zero
+- Modificar o modelo semântico
+
+---
+
+## Checklist de Início
+
+- [ ] Python 3.8+ instalado (`python --version`)
+- [ ] Node.js 16+ instalado (`node --version`)
+- [ ] Repositório clonado (`git clone ...`)
 - [ ] `pip install -r requirements.txt` executado
 - [ ] `cd mcp && npm install && cd ..` executado
-- [ ] `mkdir -p pbix extracted` executado
-- [ ] Arquivo PBIX colocado em `pbix/`
-- [ ] claude_desktop_config.json editado com MCP
+- [ ] Pastas `pbix/` e `extracted/` criadas
+- [ ] `claude_desktop_config.json` configurado com caminho do MCP
 - [ ] Claude Desktop reiniciado
-- [ ] VSCode aberto (`code .`)
-- [ ] Pronto para solicitar mudanças ao Claude!
+- [ ] Arquivo PBIX colocado em `pbix/`
+- [ ] Pronto para usar!
 
 ---
 
-**Quando tiver dúvida, releia este guia. Ele cobre 95% dos casos!** 🚀
+## Troubleshooting
 
+**"MCP Server não conecta"**
+```bash
+# Verifique o caminho absoluto em claude_desktop_config.json
+# Reinicie o Claude Desktop completamente
+cd mcp && node pbir-visual-editor-mcp.js  # deve iniciar sem erro
+
+# Se o erro persistir, verifique os logs do Claude Desktop:
+# Windows:    C:\Users\[Usuario]\AppData\Local\Claude\logs\
+# Mac/Linux:  ~/.claude/logs/
+```
+
+**"Python não encontrado"**
+```bash
+# Instale Python 3.8+ em https://python.org
+# Marque "Add Python to PATH" durante a instalação (Windows)
+```
+
+**"Node.js não encontrado"**
+```bash
+# Instale Node.js 16+ em https://nodejs.org
+```
+
+**"PBIX não descompacta"**
+```bash
+python scripts/pbix_validator.py pbix/seu_relatorio.pbix
+# Se falhar, o arquivo pode estar corrompido — baixe novamente do Power BI Service
+```
+
+**"JSONs não encontrados após extração"**
+```bash
+# Confirme que a extração foi concluída:
+ls extracted/Report/definition/pages/
+# Se vazio, re-execute o extrator
+```
+
+---
+
+Para erros que ocorrem **durante o uso** (visual não encontrado, propriedade inválida, PBIX corrompido após recompactar), consulte [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+Para mais detalhes: [EXEMPLOS.md](EXEMPLOS.md) | [ARQUITETURA.md](ARQUITETURA.md) | [TROUBLESHOOTING.md](TROUBLESHOOTING.md)

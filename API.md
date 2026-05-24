@@ -178,31 +178,6 @@ return { sucesso: true, visual: "Sales 2024", alterado: true }
 
 ---
 
-## Erros Comuns
-
-### Erro: "Arquivo PBIX inválido"
-```
-Causa: Arquivo não é PBIX válido
-Solução: Verifique se é arquivo .pbix correto
-```
-
-### Erro: "Visual não encontrado"
-```
-Causa: Nome de visual incorreto
-Solução: Use list_visuals() para ver nomes exatos
-```
-
-### Erro: "Propriedade inválida"
-```
-Causa: Tentou mudar propriedade que não existe
-Solução: Consulte documentação de JSON do Power BI
-```
-
----
-
-## Próximos Passos
-
-- Veja **[EXEMPLOS.md](EXEMPLOS.md)** para casos práticos
-- Consulte **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** para erros
-- Leia **[ARQUITETURA.md](ARQUITETURA.md)** para internals
+Para erros durante o uso, consulte [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+Para casos práticos, veja [EXEMPLOS.md](EXEMPLOS.md).
 

@@ -76,6 +76,7 @@ def recompactar(extracted_dir, output_file, original_pbix):
         print(f"[INFO] Arquivos modificados detectados: {len(mod_report)}")
         for fname in mod_report:
             print(f"  - {fname}")
+        # Novos arquivos sao reportados apos o loop principal
 
         if os.path.exists(output_file):
             os.remove(output_file)
@@ -104,6 +105,16 @@ def recompactar(extracted_dir, output_file, original_pbix):
                     else:
                         # Arquivo inalterado: copiar como esta
                         out.writestr(item, orig.read(item.filename))
+
+                # Arquivos novos: existem em extracted/ mas nao no PBIX original
+                original_arcnames = {item.filename for item in entries}
+                for root, _, files in os.walk(extracted_dir):
+                    for file in files:
+                        filepath = Path(root) / file
+                        arcname = str(filepath.relative_to(extracted_dir)).replace(os.sep, '/')
+                        if arcname not in original_arcnames:
+                            out.write(str(filepath), arcname)
+                            modified[arcname] = None  # registrar para relatorio
 
                 # DataModel por ultimo (ZIP_STORED, sem compressao)
                 if datamodel:
