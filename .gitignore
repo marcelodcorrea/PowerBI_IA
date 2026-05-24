@@ -53,6 +53,13 @@ pbix/*.pbix.backup
 extracted/*
 !extracted/.gitkeep
 
+# Template extraido (gerado localmente)
+template_extracted/*
+!template_extracted/.gitkeep
+
+# Arquivos PBIX do template (dados do cliente - nunca no Git)
+template/*.pbix
+
 # Backups
 docs_backup/
 *.bak

@@ -68,10 +68,14 @@ cd ..
 ```bash
 mkdir pbix
 mkdir extracted
+mkdir template
+mkdir template_extracted
 ```
 
 - `pbix/` → coloque seus arquivos PBIX aqui
 - `extracted/` → JSONs extraídos (criado automaticamente pelo extrator)
+- `template/` → coloque aqui um PBIX de template para ser usado como modelo de estilo (opcional)
+- `template_extracted/` → conteúdo extraído do template (criado automaticamente)
 
 ### Passo 5: Configurar MCP no Claude Desktop
 
@@ -254,6 +258,48 @@ python scripts/pbix_recompactor.py ./extracted pbix/relatorio_v2.pbix --original
 # Todas as mudanças consolidadas em um único PBIX
 ```
 
+## Usando um Template de Estilo
+
+O projeto suporta um arquivo PBIX de template que define a identidade visual dos relatórios — paleta de cores, fontes, bordas, temas.
+
+### Como funciona
+
+1. Coloque um arquivo `.pbix` com o visual desejado na pasta `template/`
+2. Nas próximas solicitações, o Claude verificará automaticamente se há um template disponível
+3. Se existir, o template será extraído para `template_extracted/` e seu estilo será usado como modelo ao criar ou modificar visuais no arquivo `pbix/`
+4. Se não existir, o fluxo normal continua sem restrições de estilo
+
+### Comportamento com template ativo
+
+| O que vem do template | O que vem do arquivo `pbix/` |
+|---|---|
+| Cores, fontes, bordas | Dados e medidas |
+| Tema (paleta de cores) | Bindings de colunas/tabelas |
+| Padding, sombra, opacidade | Layout e posicionamento |
+| Estilo dos títulos | Filtros e interações |
+
+### Fluxo com template
+
+```
+1. Coloque template em template/
+   ↓
+2. Claude extrai template → template_extracted/
+   ↓
+3. Claude analisa: cores, fontes, tema
+   ↓
+4. Extraia o PBIX de trabalho → extracted/
+   ↓
+5. Peça as mudanças ao Claude
+   ↓
+6. Claude aplica: estilo do template + dados do pbix/
+   ↓
+7. Recompacte → novo PBIX em pbix/
+```
+
+> **Dica:** o template não precisa ser reextraído a cada sessão. Se `template_extracted/` já estiver preenchido, o Claude usará diretamente os JSONs existentes.
+
+---
+
 ## Quando Usar Este Projeto
 
 ### Funciona bem para
@@ -283,6 +329,7 @@ python scripts/pbix_recompactor.py ./extracted pbix/relatorio_v2.pbix --original
 - [ ] `claude_desktop_config.json` configurado com caminho do MCP
 - [ ] Claude Desktop reiniciado
 - [ ] Arquivo PBIX colocado em `pbix/`
+- [ ] (Opcional) Arquivo PBIX de template colocado em `template/`
 - [ ] Pronto para usar!
 
 ---
